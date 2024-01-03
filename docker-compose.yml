@@ -1,0 +1,17 @@
+---
+version: "2.1"
+services:
+  jd-prom-exporter:
+    image: jd-prom-exporter
+    container_name: jd-prom-exporter
+    build: /path/to/jdownloader-prometheus-exporter/
+    environment:
+      - PUID=0
+      - PGID=0
+      - "/etc/localtime:/etc/localtime:ro"
+      - JDOWNLOADER_PATH=/jdownloader
+    volumes:
+      - /path/to/jdownloader/config/:/jdownloader:ro
+    ports:
+      - 8000:8000
+    restart: unless-stopped
