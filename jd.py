@@ -14,7 +14,8 @@ class JD:
         latestZipOrdinal = -1
         #Find the latest zip file containing the download list
         for file in os.listdir(cfgPath):
-            if match := re.match(r"downloadList(\d+)\.zip", file):
+            #why doesn't .zip$ work here?
+            if match := re.fullmatch(r"downloadList(\d+)\.zip$", file):
                 ordinal = int(match.group(1))
                 if ordinal > latestZipOrdinal:
                     latestZipFile = file
@@ -23,7 +24,7 @@ class JD:
         if latestZipFile == None:
             sys.stderr.write("Couldn't find latest downloadZip in " + cfgPath)
             sys.exit(-1)
-        #print(latestZipFile)
+        #sys.stderr.write("latestZipFile is " + latestZipFile + "\n")
         with zipfile.ZipFile(os.path.join(cfgPath, latestZipFile), mode='r') as linkZip:
             ret = {}
             for entry in linkZip.namelist():
