@@ -103,6 +103,8 @@ def mapStatus(status):
         return "Finished"
     elif status == "FAILED_EXISTS":
         return "Failed"
+    elif status == "FAILED_MD5":
+        return "Failed"
     elif status == "OFFLINE":
         return "Failed"
     elif status == "PLUGIN_DEFECT":
