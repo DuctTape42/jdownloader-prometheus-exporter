@@ -10,22 +10,30 @@ class JD:
 
     def getDownloadLinks(self):
         cfgPath = os.path.join(self.jd_path, 'cfg')
-        latestZipFile = None
-        latestZipOrdinal = -1
-        #Find the latest zip file containing the download list
+        zipFiles = {}
+        #Find the zip files containing the download list
         for file in os.listdir(cfgPath):
             #why doesn't .zip$ work here?
             if match := re.fullmatch(r"downloadList(\d+)\.zip$", file):
-                ordinal = int(match.group(1))
-                if ordinal > latestZipOrdinal:
-                    latestZipFile = file
-                    latestZipOrdinal = ordinal
+                zipFiles[int(match.group(1))] = file
 
-        if latestZipFile == None:
+        if not zipFiles:
             sys.stderr.write("Couldn't find latest downloadZip in " + cfgPath)
             sys.exit(-1)
-        #sys.stderr.write("latestZipFile is " + latestZipFile + "\n")
-        with zipfile.ZipFile(os.path.join(cfgPath, latestZipFile), mode='r') as linkZip:
+
+        #JDownloader writes each save in place, so the newest file can be incomplete for
+        #several seconds. Fall back to an earlier save, which can itself be deleted at any time.
+        error = None
+        for ordinal in sorted(zipFiles, reverse=True):
+            try:
+                return self.readDownloadList(os.path.join(cfgPath, zipFiles[ordinal]))
+            except (zipfile.BadZipFile, FileNotFoundError) as e:
+                sys.stderr.write("Skipping " + zipFiles[ordinal] + ": " + str(e) + "\n")
+                error = e
+        raise error
+
+    def readDownloadList(self, zipPath):
+        with zipfile.ZipFile(zipPath, mode='r') as linkZip:
             ret = {}
             for entry in linkZip.namelist():
                 #If this is a package.  We can skip these
