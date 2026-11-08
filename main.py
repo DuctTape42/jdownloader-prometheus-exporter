@@ -99,6 +99,8 @@ def mapStatus(status):
         return "Finished"
     elif status == "FINISHED_SHA256":
         return "Finished"
+    elif status == "FINISHED_CRC32":
+        return "Finished"
     elif status == "FINISHED_MIRROR":
         return "Finished"
     elif status == "FAILED_EXISTS":
@@ -108,6 +110,8 @@ def mapStatus(status):
     elif status == "OFFLINE":
         return "Failed"
     elif status == "PLUGIN_DEFECT":
+        return "Failed"
+    elif status == "FAILED_FATAL":
         return "Failed"
     else:
         sys.stderr.write("Unknown status: " + status + "\n")
